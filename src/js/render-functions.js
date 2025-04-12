@@ -68,3 +68,6 @@ export function hideLoader() {
   loader.classList.add('hidden');
   // console.log('Loader is hidden');
 }
+
+export function showLoadMoreButton() {}
+export function hideLoadMoreButton() {}

@@ -1,0 +1,26 @@
+.load-more-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.load-more-hidden {
+  display: none;
+}
+
+
+.load-more {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  width: 125px;
+  height: 40px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: #4E75FF;
+  background-color: #4E75FF;
+  color: #FFFFFF;
+}
+
+.load-more:hover {
+  background-color: #6C8CFF;
+}

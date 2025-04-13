@@ -2,9 +2,11 @@ import {
   getImagesByQuery,
   resetPage,
   incrementPage,
+  totalHits,
 } from './js/pixabay-api.js';
 import {
   createGallery,
+  appendGallery,
   showLoader,
   hideLoader,
   clearGallery,
@@ -14,15 +16,16 @@ import 'izitoast/dist/css/iziToast.min.css';
 
 const form = document.querySelector('.form');
 const input = document.querySelector('.search-input');
+const loadMoreWrapper = document.querySelector('.load-more-wrapper');
 const loadMore = document.querySelector('.load-more');
 const loader = document.querySelector('#loader');
 
 function showLoadMoreBtn() {
-  loadMore.classList.remove('load-more-hidden');
+  loadMoreWrapper.classList.remove('load-more-hidden');
 }
 
 function hideLoadMoreBtn() {
-  loadMore.classList.add('load-more-hidden');
+  loadMoreWrapper.classList.add('load-more-hidden');
 }
 function showEndMessage() {
   iziToast.info({
@@ -33,7 +36,18 @@ function showEndMessage() {
   });
 }
 
-getBoundingClientRect();
+function smoothScroll() {
+  const card = document.querySelector('.gallery-item');
+  if (card) {
+    const cardHeight = card.getBoundingClientRect().height;
+    window.scrollBy({
+      top: cardHeight * 2,
+      behavior: 'smooth',
+    });
+  }
+}
+
+hideLoadMoreBtn();
 
 form.addEventListener('submit', async function (event) {
   event.preventDefault();
@@ -46,12 +60,11 @@ form.addEventListener('submit', async function (event) {
 
   resetPage();
   clearGallery();
-  hideLoadMoreBtn;
+  hideLoadMoreBtn();
   showLoader();
 
   try {
     const images = await getImagesByQuery(query);
-
     if (images.length === 0) {
       iziToast.warning({
         message:
@@ -64,11 +77,10 @@ form.addEventListener('submit', async function (event) {
     }
     createGallery(images);
 
-    const totalHits = images.length + (page - 1) * 15;
-    if (totalHits < 100) {
-      showLoadMoreBtn();
-    } else {
+    if (images.length < 15 || images.length >= totalHits) {
       showEndMessage();
+    } else {
+      showLoadMoreBtn();
     }
   } catch (error) {
     console.error('Pixabay API error:', error);
@@ -93,9 +105,17 @@ async function handleLoadClick() {
     const images = await getImagesByQuery(query);
     if (images.length === 0) {
       hideLoadMoreBtn();
+      showEndMessage();
       return;
     }
-    createGallery(images);
+
+    appendGallery(images);
+    smoothScroll();
+
+    if (images.length < 15 || images.length >= totalHits) {
+      hideLoadMoreBtn();
+      showEndMessage();
+    }
   } catch (error) {
     console.log(error);
   } finally {

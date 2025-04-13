@@ -3,6 +3,7 @@ import axios from 'axios';
 const API_KEY = '49643756-826760c59f13ca953f19ee970';
 const URL = 'https://pixabay.com/api/';
 let page = 1;
+export let totalHits = 0;
 
 export async function getImagesByQuery(query) {
   try {
@@ -17,9 +18,11 @@ export async function getImagesByQuery(query) {
         per_page: 15,
       },
     });
+    totalHits = response.data.totalHits;
     return response.data.hits;
   } catch (error) {
     console.log(error);
+    totalHits = 0;
     return [];
   }
 }
